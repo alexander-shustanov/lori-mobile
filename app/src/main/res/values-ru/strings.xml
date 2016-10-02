@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="a_login_login">Логин</string>
+    <string name="a_login_password">Пароль</string>
+    <string name="a_login_sign_in">Вход</string>
+    <string name="a_new_time_entry_title">Новая запись времени</string>
+</resources>
