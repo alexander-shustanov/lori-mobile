@@ -42,6 +42,6 @@ public class NewTimeEntryVm extends BaseObservable {
     }
 
     public TimeEntry createTimeEntry() {
-        return new TimeEntry(date.toDate(), "0", "0", "new", task.getName());
+        return new TimeEntry(date.toDate(), "0", "0", "new", task.getId());
     }
 }

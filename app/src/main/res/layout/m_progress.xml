@@ -5,7 +5,8 @@
         android:id="@+id/foreground_progress"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#aaaaaa">
+        android:background="#aaaaaaaa"
+        android:visibility="gone">
 
         <ProgressBar
             android:layout_width="wrap_content"

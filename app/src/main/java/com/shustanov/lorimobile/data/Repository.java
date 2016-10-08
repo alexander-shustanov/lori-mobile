@@ -72,6 +72,6 @@ public abstract class Repository<Entity> {
     protected abstract EntityApi<Entity, ?> getApi();
 
     public Observable<Entity> create(Entity entity) {
-        return getApi().create(entity).doOnNext(this::save).observeOn(AndroidSchedulers.mainThread());
+        return getApi().create(entity).doOnNext(this::save);
     }
 }

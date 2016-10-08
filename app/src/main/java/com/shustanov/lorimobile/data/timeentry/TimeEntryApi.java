@@ -1,18 +1,19 @@
 package com.shustanov.lorimobile.data.timeentry;
 
+import com.shustanov.lorimobile.api.TimeEntryServerView;
 import com.shustanov.lorimobile.data.Commit;
 import com.shustanov.lorimobile.data.EntityApi;
 import com.shustanov.lorimobile.data.Repository;
+import com.shustanov.lorimobile.data.user.UserPrefsFacade;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.http.Body;
 import retrofit2.http.GET;
-import retrofit2.http.Header;
-import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 import rx.Observable;
@@ -22,30 +23,39 @@ import rx.android.schedulers.AndroidSchedulers;
 public class TimeEntryApi extends EntityApi<TimeEntry, TimeEntryApi.Api> {
 
     @Bean
-    protected TimeEntryRepository timeEntryRepository;
+    UserPrefsFacade userPrefs;
 
-    public TimeEntryApi() {
+    @Bean
+    TimeEntryRepository timeEntryRepository;
+
+    TimeEntryApi() {
         init();
     }
 
     @Override
     public Observable<List<TimeEntry>> getAll() {
-        return api().query(getAllQuery()).observeOn(AndroidSchedulers.mainThread());
+        return api().query(getAllQuery()).map(timeEntryServerViews -> {
+            List<TimeEntry> timeEntries = new ArrayList<TimeEntry>();
+            for (TimeEntryServerView serverView : timeEntryServerViews) {
+                timeEntries.add(serverView.buildTimeEntry());
+            }
+            return timeEntries;
+        });
     }
 
     @Override
     public Observable<TimeEntry> create(TimeEntry timeEntry) {
-        Commit commit = new Commit.Builder().commit(timeEntry).build();
+        Commit commit = new Commit.Builder().commit(TimeEntryServerView.build(timeEntry, userPrefs.getUserId())).build();
         return api().
-                commit(gson().toJson(commit)).
+                commit(commit).
                 map(entities -> entities.get(0)).
-                doOnNext(getRepository()::save).
-                observeOn(AndroidSchedulers.mainThread());
+                map(TimeEntryServerView::buildTimeEntry).
+                doOnNext(getRepository()::save);
     }
 
     @Override
     public Observable<TimeEntry> getById(String id) {
-        return api().getById(id);
+        return api().getById(id).map(TimeEntryServerView::buildTimeEntry);
     }
 
     @Override
@@ -63,13 +73,13 @@ public class TimeEntryApi extends EntityApi<TimeEntry, TimeEntryApi.Api> {
     }
 
     interface Api {
-        @GET("query.json?e=ts$Task")
-        Observable<List<TimeEntry>> query(@Query("q") String query);
+        @GET("query.json?e=ts$Task&view=timeEntry-browse")
+        Observable<List<TimeEntryServerView>> query(@Query("q") String query);
 
-        @GET("find.json")
-        Observable<TimeEntry> getById(@Query("e") String id);
-//        @Headers("Content-type: application/json")
+        @GET("find.json?view=timeEntry-browse")
+        Observable<TimeEntryServerView> getById(@Query("e") String id);
+
         @POST("commit")
-        Observable<List<TimeEntry>> commit(@Body String commit);
+        Observable<List<TimeEntryServerView>> commit(@Body Commit commit);
     }
 }

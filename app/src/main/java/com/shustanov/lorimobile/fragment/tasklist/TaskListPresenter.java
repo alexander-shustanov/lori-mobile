@@ -64,4 +64,9 @@ public class TaskListPresenter extends Presenter<TaskListView> implements TaskLi
     public void addTimeEntry(Task task) {
         getView().openAddTimeEntryActivity(task.getId());
     }
+
+    @Override
+    public void openTaskDetails(Task task) {
+        getView().openTaskDetails(task.getId());
+    }
 }

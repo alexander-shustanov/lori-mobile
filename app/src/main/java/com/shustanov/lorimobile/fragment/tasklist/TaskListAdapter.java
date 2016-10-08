@@ -19,7 +19,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.Holder
 
     private List<Task> tasks = new ArrayList<>();
 
-    public TaskListAdapter(Context context) {
+    TaskListAdapter(Context context) {
         inflater = LayoutInflater.from(context);
     }
 
@@ -43,26 +43,26 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.Holder
         return tasks.get(position);
     }
 
-    public void addTasks(List<Task> tasks) {
+    void addTasks(List<Task> tasks) {
         int position = this.tasks.size();
         this.tasks.addAll(tasks);
         notifyItemRangeInserted(position, tasks.size());
     }
 
-    public void clear() {
+    void clear() {
         int size = tasks.size();
         tasks.clear();
         notifyItemRangeRemoved(0, size);
     }
 
-    public void setListener(Listener listener) {
+    void setListener(Listener listener) {
         this.listener = listener;
     }
 
-    protected class Holder extends RecyclerView.ViewHolder {
+    class Holder extends RecyclerView.ViewHolder {
         ITaskBinding binding;
 
-        public Holder(View itemView) {
+        Holder(View itemView) {
             super(itemView);
             binding = ITaskBinding.bind(itemView);
         }
@@ -70,5 +70,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.Holder
 
     public interface Listener {
         void addTimeEntry(Task task);
+
+        void openTaskDetails(Task task);
     }
 }

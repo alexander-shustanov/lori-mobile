@@ -13,4 +13,6 @@ public interface TaskListView extends View {
     void clear();
 
     void openAddTimeEntryActivity(String id);
+
+    void openTaskDetails(String id);
 }

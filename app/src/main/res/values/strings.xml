@@ -6,4 +6,7 @@
     <string name="a_login_sign_in">Sign In</string>
     <string name="tasks_tab">Tasks</string>
     <string name="a_new_time_entry_title">New time entry</string>
+    <string name="check_network">Check your network connection</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="invalid_credentials">Invalid credentials</string>
 </resources>

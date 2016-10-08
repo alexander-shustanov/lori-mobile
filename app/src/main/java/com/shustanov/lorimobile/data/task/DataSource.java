@@ -7,7 +7,7 @@ import java.util.List;
 
 public abstract class DataSource<Entity> {
     public void save(Entity entity) {
-        getDao().save(entity);
+        getDao().insertOrReplace(entity);
     }
 
     public void delete(Entity entity) {
@@ -23,7 +23,7 @@ public abstract class DataSource<Entity> {
     }
 
     public void saveAll(List<Entity> entities) {
-        getDao().saveInTx(entities);
+        getDao().insertOrReplaceInTx(entities);
     }
 
     public void clear() {

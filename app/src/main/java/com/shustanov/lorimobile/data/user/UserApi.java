@@ -3,6 +3,8 @@ package com.shustanov.lorimobile.data.user;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.shustanov.lorimobile.api.LoginApi;
+import com.shustanov.lorimobile.data.EntityApi;
+import com.shustanov.lorimobile.data.Repository;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
@@ -22,61 +24,56 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 @EBean(scope = EBean.Scope.Singleton)
-public class UserApi {
+public class UserApi extends EntityApi<User, UserApi.Api> {
 
-    private final Api api;
-    @Bean
-    protected LoginApi loginApi;
-
-    public UserApi() {
-        RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
-
-        Gson gson = new GsonBuilder().create();
-
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.addInterceptor(chain -> {
-            Request original = chain.request();
-            HttpUrl originalHttpUrl = original.url();
-
-            HttpUrl url = originalHttpUrl.newBuilder()
-                    .addQueryParameter("s", loginApi.getUserSessionId())
-                    .build();
-
-            Request.Builder requestBuilder = original.newBuilder()
-                    .url(url);
-
-            Request request = requestBuilder.build();
-            return chain.proceed(request);
-        });
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.1.7:8080/app/dispatch/api/")
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .addCallAdapterFactory(rxAdapter)
-                .client(builder.build())
-                .build();
-
-        api = retrofit.create(Api.class);
+    UserApi() {
+        init();
     }
 
-    public Observable<User> getByLogin(String login) {
-        return api.
-                query(getByLoginQuery(login)).
-                map(users -> {
-                    if (!users.isEmpty()) {
-                        return users.get(0);
-                    }
-                    throw new NoSuchUserException(login);
-                }).observeOn(AndroidSchedulers.mainThread());
+    @GET("query.json?e=ts$ExtUser")
+    public Observable<User> queryUser(String userLogin) {
+        return api().queryUser(getByLoginQuery(userLogin)).map(users -> users.get(0));
     }
 
     private String getByLoginQuery(String login) {
         return String.format("select u from ts$ExtUser u where u.login = '%s'", login);
     }
 
-    private interface Api {
+    @Override
+    protected Class<Api> getApiClass() {
+        return Api.class;
+    }
 
+    @Override
+    public Observable<List<User>> getAll() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Observable<User> create(User user) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Observable<User> getById(String id) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected Repository<User> getRepository() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected String getAllQuery() {
+        throw new UnsupportedOperationException();
+    }
+
+    interface Api {
         @GET("query.json?e=ts$ExtUser")
         Observable<List<User>> query(@Query("q") String query);
+
+        @GET("query.json?e=ts$ExtUser&view=group.browse")
+        Observable<List<User>> queryUser(@Query("q") String query);
     }
 }

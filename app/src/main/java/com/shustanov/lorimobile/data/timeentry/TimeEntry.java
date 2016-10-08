@@ -21,32 +21,32 @@ public class TimeEntry {
     @Property
     private String status;
     @Property
-    private String taskName;
-
-    @Generated(hash = 735398872)
-    public TimeEntry(String id, Date date, String timeInHours,
-                     String timeInMinutes, String status, String taskName) {
-        this.id = id;
-        this.date = date;
-        this.timeInHours = timeInHours;
-        this.timeInMinutes = timeInMinutes;
-        this.status = status;
-        this.taskName = taskName;
-    }
+    private String taskId;
 
     @Keep
     public TimeEntry(Date date, String timeInHours,
-                     String timeInMinutes, String status, String taskName) {
+                     String timeInMinutes, String status, String taskId) {
         this.id = "NEW-ts$TimeEntry";
         this.date = date;
         this.timeInHours = timeInHours;
         this.timeInMinutes = timeInMinutes;
         this.status = status;
-        this.taskName = taskName;
+        this.taskId = taskId;
     }
 
     @Generated(hash = 561589019)
     public TimeEntry() {
+    }
+
+    @Generated(hash = 1914244752)
+    public TimeEntry(String id, Date date, String timeInHours,
+            String timeInMinutes, String status, String taskId) {
+        this.id = id;
+        this.date = date;
+        this.timeInHours = timeInHours;
+        this.timeInMinutes = timeInMinutes;
+        this.status = status;
+        this.taskId = taskId;
     }
 
     public String getId() {
@@ -89,11 +89,13 @@ public class TimeEntry {
         this.status = status;
     }
 
-    public String getTaskName() {
-        return this.taskName;
+    public String getTaskId() {
+        return this.taskId;
     }
 
-    public void setTaskName(String taskName) {
-        this.taskName = taskName;
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
+
+
 }

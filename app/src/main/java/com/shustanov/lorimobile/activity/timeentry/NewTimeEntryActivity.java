@@ -4,17 +4,15 @@ import android.app.DatePickerDialog;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.shustanov.lorimobile.R;
+import com.shustanov.lorimobile.Utilities;
 import com.shustanov.lorimobile.activity.BaseActivity;
 import com.shustanov.lorimobile.data.task.TaskApi;
 import com.shustanov.lorimobile.data.task.TaskRepository;
-import com.shustanov.lorimobile.data.timeentry.TimeEntry;
-import com.shustanov.lorimobile.data.timeentry.TimeEntryApi;
 import com.shustanov.lorimobile.data.timeentry.TimeEntryRepository;
 import com.shustanov.lorimobile.databinding.ANewTimeEntryBinding;
 
@@ -24,6 +22,8 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.ViewById;
 import org.joda.time.LocalDate;
+
+import rx.android.schedulers.AndroidSchedulers;
 
 @EActivity
 public class NewTimeEntryActivity extends BaseActivity {
@@ -83,7 +83,7 @@ public class NewTimeEntryActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home) {
+        if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;
         }
@@ -92,13 +92,26 @@ public class NewTimeEntryActivity extends BaseActivity {
 
     @Click(R.id.new_time_entry_done)
     protected void done() {
+        Utilities.hideKeyBoard(this);
+        showProgress();
+        addSubscription(
+                timeEntryRepository.
+                        create(vm.createTimeEntry()).
+                        observeOn(AndroidSchedulers.mainThread()).
+                        subscribe(timeEntry -> {
+                            setResult(RESULT_OK);
+                            finish();
+                        }, throwable -> {
+                            hideProgress();
+                            snackBar(R.string.something_went_wrong);
+                        }, this::hideProgress));
+    }
+
+    private void showProgress() {
         foregroundProgress.setVisibility(View.VISIBLE);
-        addSubscription(timeEntryRepository.create(vm.createTimeEntry()).subscribe(timeEntry -> {
-        },throwable -> {
-            foregroundProgress.setVisibility(View.GONE);
-            toast("Error");
-        },() -> {
-            foregroundProgress.setVisibility(View.GONE);
-        }));
+    }
+
+    private void hideProgress() {
+        foregroundProgress.setVisibility(View.GONE);
     }
 }

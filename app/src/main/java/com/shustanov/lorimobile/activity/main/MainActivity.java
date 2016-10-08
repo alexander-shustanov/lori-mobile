@@ -3,6 +3,7 @@ package com.shustanov.lorimobile.activity.main;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import com.shustanov.lorimobile.R;
 import com.shustanov.lorimobile.activity.BaseActivity;
@@ -25,5 +26,10 @@ public class MainActivity extends BaseActivity {
         tabs.setupWithViewPager(pager);
         setSupportActionBar(toolbar);
         pager.setAdapter(new MainPagerAdapter(getSupportFragmentManager(), this));
+    }
+
+    @Override
+    protected View getSnackBarView() {
+        return findViewById(R.id.coordinator);
     }
 }

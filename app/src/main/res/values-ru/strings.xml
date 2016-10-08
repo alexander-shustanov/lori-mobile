@@ -4,4 +4,7 @@
     <string name="a_login_password">Пароль</string>
     <string name="a_login_sign_in">Вход</string>
     <string name="a_new_time_entry_title">Новая запись времени</string>
+    <string name="check_network">Проверьте доступность сети</string>
+    <string name="something_went_wrong">Что-то пошло не так</string>
+    <string name="invalid_credentials">Не правильная комбинация логин/пароль</string>
 </resources>

@@ -3,7 +3,9 @@ package com.shustanov.lorimobile.api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.shustanov.lorimobile.BuildConfig;
+import com.shustanov.lorimobile.data.user.User;
 import com.shustanov.lorimobile.data.user.UserApi;
+import com.shustanov.lorimobile.data.user.UserPrefsFacade;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
@@ -22,11 +24,11 @@ import rx.schedulers.Schedulers;
 @EBean(scope = EBean.Scope.Singleton)
 public class LoginApi {
 
-    @Bean
-    protected UserApi userApi;
-
     private final Api loginApi;
-
+    @Bean
+    UserPrefsFacade userPrefs;
+    @Bean
+    UserApi userApi;
     private String userSessionId;
 
     public LoginApi() {
@@ -42,16 +44,22 @@ public class LoginApi {
         loginApi = retrofit.create(Api.class);
     }
 
-    public Observable<Void> login(String userName, String password) {
-        return loginApi.login(userName, password).map(responseBody -> {
-            try {
-                this.userSessionId = responseBody.string();
-            } catch (IOException e) {
-                throw new InvalidLoginException();
-            }
+    public Observable<User> login(String userName, String password) {
+        return loginApi.login(userName, password).
+                doOnNext(responseBody -> {
+                    try {
+                        this.userSessionId = responseBody.string();
+                    } catch (IOException e) {
+                        throw new InvalidLoginException();
+                    }
+                }).
+                flatMap(body -> userApi.queryUser(userName)).
+                doOnNext(user -> userPrefs.setUserId(user.getId())).
+                observeOn(AndroidSchedulers.mainThread());
+    }
 
-            return (Void) null;
-        }).observeOn(AndroidSchedulers.mainThread());
+    private String createRequestUserQuery(String userLogin) {
+        return String.format("select us from ts$ExtUser us where us.login='%s'", userLogin);
     }
 
     public String getUserSessionId() {
