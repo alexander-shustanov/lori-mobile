@@ -7,4 +7,6 @@
     <string name="check_network">Проверьте доступность сети</string>
     <string name="something_went_wrong">Что-то пошло не так</string>
     <string name="invalid_credentials">Не правильная комбинация логин/пароль</string>
+    <string name="calendar">Календарь</string>
+    <string name="today">Сегодня</string>
 </resources>

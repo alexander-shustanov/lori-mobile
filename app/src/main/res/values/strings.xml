@@ -9,4 +9,6 @@
     <string name="check_network">Check your network connection</string>
     <string name="something_went_wrong">Something went wrong</string>
     <string name="invalid_credentials">Invalid credentials</string>
+    <string name="calendar">Calendar</string>
+    <string name="today">Today</string>
 </resources>

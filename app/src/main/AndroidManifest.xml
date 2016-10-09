@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.shustanov.lorimobile">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -10,7 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".activity.login.LoginActivity_">
+        <activity
+            android:name=".activity.login.LoginActivity_"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -19,8 +21,11 @@
 
         <activity android:name=".activity.main.MainActivity_" />
 
-        <activity android:name=".activity.timeentry.NewTimeEntryActivity_"
-            android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:name=".activity.timeentry.NewTimeEntryActivity_"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity android:name=".activity.calendar.CalendarActivity_" />
 
     </application>
 
