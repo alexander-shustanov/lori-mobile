@@ -67,13 +67,11 @@ public abstract class EntityApi<Entity, Api> {
 
     protected abstract Repository<Entity> getRepository();
 
-    public Gson gson() {
+    protected Gson gson() {
         return gson;
     }
 
     public Api api() {
         return api;
     }
-
-    protected abstract String getAllQuery();
 }

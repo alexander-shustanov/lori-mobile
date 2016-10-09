@@ -10,7 +10,8 @@ import org.joda.time.LocalDate;
 
 
 class WeeksAdapter extends FragmentPagerAdapter {
-    static final int CURRENT_WEEK_POSITION = Integer.MAX_VALUE / 2;
+    private static final int WEEKS_COUNT = 1000;
+    static final int CURRENT_WEEK_POSITION = WEEKS_COUNT / 2;
 
     private final LocalDate currentWeek;
 
@@ -29,6 +30,6 @@ class WeeksAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return Integer.MAX_VALUE;
+        return WEEKS_COUNT;
     }
 }

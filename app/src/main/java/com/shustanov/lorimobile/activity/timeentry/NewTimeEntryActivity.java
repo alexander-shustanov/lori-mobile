@@ -66,7 +66,7 @@ public class NewTimeEntryActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        addSubscription(taskRepository.getById(taskId).subscribe(this.vm::setTask));
+        addSubscription(taskRepository.getById(taskId).observeOn(AndroidSchedulers.mainThread()).subscribe(this.vm::setTask));
     }
 
     @Click(R.id.date_text)

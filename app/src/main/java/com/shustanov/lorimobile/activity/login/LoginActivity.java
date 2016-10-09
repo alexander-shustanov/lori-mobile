@@ -10,7 +10,6 @@ import com.shustanov.lorimobile.R;
 import com.shustanov.lorimobile.Utilities;
 import com.shustanov.lorimobile.activity.BaseActivity;
 import com.shustanov.lorimobile.activity.main.MainActivity_;
-import com.shustanov.lorimobile.api.InvalidLoginException;
 import com.shustanov.lorimobile.api.LoginApi;
 import com.shustanov.lorimobile.data.DbHelper;
 import com.shustanov.lorimobile.data.user.User;
@@ -44,9 +43,9 @@ public class LoginActivity extends BaseActivity {
         showProgress();
         Utilities.hideKeyBoard(this);
         addSubscription(
-                loginApi.
-                        login(loginText(), passwordText()).
-                        subscribe(
+                loginApi
+                        .login(loginText(), passwordText())
+                        .subscribe(
                                 this::successLogin,
                                 this::unsuccessLogin)
         );

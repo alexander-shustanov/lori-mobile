@@ -2,6 +2,7 @@ package com.shustanov.lorimobile.data.task;
 
 import com.shustanov.lorimobile.data.EntityApi;
 import com.shustanov.lorimobile.data.Repository;
+import com.shustanov.lorimobile.rx.BatchLoader;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
@@ -14,12 +15,13 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 @EBean(scope = EBean.Scope.Singleton)
 public class TaskApi extends EntityApi<Task, TaskApi.Api> {
-
+    private static final int BATCH_SIZE = 10;
     @Bean
-    protected TaskRepository taskRepository;
+    TaskRepository taskRepository;
 
     public TaskApi() {
         init();
@@ -27,21 +29,17 @@ public class TaskApi extends EntityApi<Task, TaskApi.Api> {
 
     @Override
     public Observable<List<Task>> getAll() {
-        return api().query(getAllQuery()).observeOn(AndroidSchedulers.mainThread());
+        return BatchLoader.create(first -> api().getAll(first, BATCH_SIZE),BATCH_SIZE, Schedulers.io());
     }
 
     @Override
     public Observable<Task> create(Task task) {
-        return api().commit(gson().toJson(task)).map(entities -> entities.get(0)).doOnNext(getRepository()::save).observeOn(AndroidSchedulers.mainThread());
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Observable<Task> getById(String id) {
         return api().getById(id);
-    }
-
-    protected String getAllQuery() {
-        return "select task from ts$Task task";
     }
 
     @Override
@@ -55,13 +53,13 @@ public class TaskApi extends EntityApi<Task, TaskApi.Api> {
     }
 
     public interface Api {
-        @GET("query.json?e=ts$Task")
-        Observable<List<Task>> query(@Query("q") String query);
+
+        @GET("query.json?e=ts$Task&q=select task from ts$Task task")
+        Observable<List<Task>> getAll(
+                @Query("first") Integer first,
+                @Query("max") Integer max);
 
         @GET("find.json?")
         Observable<Task> getById(@Query("e") String id);
-
-        @POST("commit?")
-        Observable<List<Task>> commit(@Body String commit);
     }
 }

@@ -10,10 +10,13 @@ import org.androidannotations.annotations.EBean;
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.Property;
 
+import java.util.Date;
+import java.util.List;
+
 @EBean(scope = EBean.Scope.Singleton)
-public class TimeEntryDbDataSource extends DataSource<TimeEntry> {
+class TimeEntryDbDataSource extends DataSource<TimeEntry> {
     @Bean
-    protected DbHelper dbHelper;
+    DbHelper dbHelper;
 
     private TimeEntryDao timeEntryDao;
 
@@ -30,5 +33,9 @@ public class TimeEntryDbDataSource extends DataSource<TimeEntry> {
     @Override
     protected Property getIdProperty() {
         return TimeEntryDao.Properties.Id;
+    }
+
+    List<TimeEntry> getForWeek(Date from, Date to) {
+        return timeEntryDao.queryBuilder().where(TimeEntryDao.Properties.Date.between(from, to)).list();
     }
 }

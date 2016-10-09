@@ -62,7 +62,7 @@ public class CalendarActivity extends BaseActivity implements ViewPager.OnPageCh
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.go_today:
-                weekPager.setCurrentItem(WeeksAdapter.CURRENT_WEEK_POSITION, false);
+                weekPager.setCurrentItem(WeeksAdapter.CURRENT_WEEK_POSITION);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

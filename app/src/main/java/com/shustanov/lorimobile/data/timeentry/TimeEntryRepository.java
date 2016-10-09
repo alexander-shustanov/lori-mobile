@@ -7,15 +7,20 @@ import com.shustanov.lorimobile.data.task.DataSource;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
+import org.joda.time.LocalDate;
+
+import java.util.List;
+
+import rx.Observable;
+import rx.schedulers.Schedulers;
 
 @EBean(scope = EBean.Scope.Singleton)
 public class TimeEntryRepository extends Repository<TimeEntry> {
 
     @Bean
-    protected TimeEntryDbDataSource timeEntryDataSource;
-
+    TimeEntryDbDataSource timeEntryDataSource;
     @Bean
-    protected TimeEntryApi api;
+    TimeEntryApi api;
 
     @Override
     protected DataSource<TimeEntry> getDbDataSource() {
@@ -25,5 +30,16 @@ public class TimeEntryRepository extends Repository<TimeEntry> {
     @Override
     protected EntityApi<TimeEntry, ?> getApi() {
         return api;
+    }
+
+    public Observable<List<TimeEntry>> getForWeek(LocalDate monday) {
+        if (isDirty()) {
+            return api.getForWeek(monday.toDate(), monday.plusWeeks(1).toDate());
+        } else {
+            return Observable.<List<TimeEntry>>create(subscriber -> {
+                subscriber.onNext(timeEntryDataSource.getForWeek(monday.toDate(), monday.plusWeeks(1).toDate()));
+                subscriber.onCompleted();
+            }).subscribeOn(Schedulers.io());
+        }
     }
 }

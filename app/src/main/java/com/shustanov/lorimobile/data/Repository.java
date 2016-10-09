@@ -1,7 +1,6 @@
 package com.shustanov.lorimobile.data;
 
 import com.shustanov.lorimobile.data.task.DataSource;
-import com.shustanov.lorimobile.data.timeentry.TimeEntry;
 
 import org.androidannotations.annotations.EBean;
 
@@ -9,6 +8,7 @@ import java.util.List;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 @EBean
 public abstract class Repository<Entity> {
@@ -27,23 +27,22 @@ public abstract class Repository<Entity> {
     }
 
     public Observable<List<Entity>> getAll() {
-        Observable<List<Entity>> observable;
         if (dirty) {
-            observable = getApi().
+            return getApi().
                     getAll().
                     doOnSubscribe(getDbDataSource()::clear).
                     doOnNext(this::saveAll).
                     doOnCompleted(() -> dirty = false).
                     observeOn(AndroidSchedulers.mainThread());
         } else {
-            observable = Observable.<List<Entity>>create(
+            return Observable.<List<Entity>>create(
                     subscriber -> {
                         subscriber.onNext(getDbDataSource().getAll());
                         subscriber.onCompleted();
                     }
-            );
+            )
+                    .subscribeOn(Schedulers.io());
         }
-        return observable.observeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<Entity> getById(String id) {
@@ -51,10 +50,10 @@ public abstract class Repository<Entity> {
         if (dirty) {
             observable = getApi().getById(id);
         } else {
-            observable = Observable.create(subscriber -> {
+            observable = Observable.<Entity>create(subscriber -> {
                 subscriber.onNext(getDbDataSource().getById(id));
                 subscriber.onCompleted();
-            });
+            }).subscribeOn(Schedulers.io());
         }
         return observable.observeOn(AndroidSchedulers.mainThread());
     }
