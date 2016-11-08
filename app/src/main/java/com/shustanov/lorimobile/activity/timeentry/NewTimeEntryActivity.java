@@ -11,8 +11,10 @@ import android.view.View;
 import com.shustanov.lorimobile.R;
 import com.shustanov.lorimobile.Utilities;
 import com.shustanov.lorimobile.activity.BaseActivity;
+import com.shustanov.lorimobile.data.task.Task;
 import com.shustanov.lorimobile.data.task.TaskApi;
 import com.shustanov.lorimobile.data.task.TaskRepository;
+import com.shustanov.lorimobile.data.timeentry.TimeEntry;
 import com.shustanov.lorimobile.data.timeentry.TimeEntryRepository;
 import com.shustanov.lorimobile.databinding.ANewTimeEntryBinding;
 
@@ -23,6 +25,7 @@ import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.ViewById;
 import org.joda.time.LocalDate;
 
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
 @EActivity
@@ -30,6 +33,8 @@ public class NewTimeEntryActivity extends BaseActivity {
 
     @Extra
     protected String taskId;
+    @Extra
+    protected String timeEntryId;
 
     @ViewById(R.id.toolbar)
     protected Toolbar toolbar;
@@ -43,15 +48,12 @@ public class NewTimeEntryActivity extends BaseActivity {
     @Bean
     protected TaskApi taskApi;
 
-    private NewTimeEntryVm vm;
+    private TimeEntryVm vm;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        vm = new NewTimeEntryVm();
-
         ANewTimeEntryBinding binding = DataBindingUtil.setContentView(this, R.layout.a_new_time_entry);
-        binding.setVm(vm);
 
         setSupportActionBar(binding.toolbar);
 
@@ -61,12 +63,30 @@ public class NewTimeEntryActivity extends BaseActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
 
         binding.toolbar.setNavigationOnClickListener(v -> finish());
+
+        vm = new TimeEntryVm();
+        binding.setVm(vm);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        addSubscription(taskRepository.getById(taskId).observeOn(AndroidSchedulers.mainThread()).subscribe(this.vm::setTask));
+        if (taskId != null) {
+            addSubscription(updateTask(this.taskId).subscribe(vm::setTask));
+        }
+
+        if (timeEntryId != null) {
+            addSubscription(timeEntryRepository
+                    .getById(timeEntryId)
+                    .subscribeOn(AndroidSchedulers.mainThread())
+                    .doOnNext(vm::fill)
+                    .flatMap(timeEntry -> updateTask(timeEntry.getTaskId()))
+                    .subscribe(vm::setTask));
+        }
+    }
+
+    private Observable<Task> updateTask(String taskId) {
+        return taskRepository.getById(taskId).observeOn(AndroidSchedulers.mainThread());
     }
 
     @Click(R.id.date_text)
@@ -94,11 +114,15 @@ public class NewTimeEntryActivity extends BaseActivity {
     protected void done() {
         Utilities.hideKeyBoard(this);
         showProgress();
+        TimeEntry entity = vm.createTimeEntry();
+        if (timeEntryId != null) {
+            entity.setId(timeEntryId);
+        }
         addSubscription(
-                timeEntryRepository.
-                        create(vm.createTimeEntry()).
-                        observeOn(AndroidSchedulers.mainThread()).
-                        subscribe(timeEntry -> {
+                timeEntryRepository
+                        .commit(entity)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(timeEntry -> {
                             setResult(RESULT_OK);
                             finish();
                         }, throwable -> {

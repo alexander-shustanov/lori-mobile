@@ -9,11 +9,14 @@ import android.widget.ProgressBar;
 import com.shustanov.lorimobile.R;
 import com.shustanov.lorimobile.Utilities;
 import com.shustanov.lorimobile.activity.BaseActivity;
-import com.shustanov.lorimobile.activity.main.MainActivity_;
+import com.shustanov.lorimobile.activity.main.TaskActivity_;
 import com.shustanov.lorimobile.api.LoginApi;
 import com.shustanov.lorimobile.data.DbHelper;
 import com.shustanov.lorimobile.data.user.User;
+import com.shustanov.lorimobile.data.user.UserPrefsFacade;
+import com.shustanov.lorimobile.fragment.settings.SettingsFragmentDialog_;
 
+import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
@@ -24,19 +27,32 @@ import retrofit2.adapter.rxjava.HttpException;
 @EActivity(R.layout.a_login)
 public class LoginActivity extends BaseActivity {
 
+    @Bean
+    UserPrefsFacade userPrefs;
+
     @ViewById(R.id.login_text)
-    protected EditText login;
+    EditText login;
     @ViewById(R.id.login_password)
-    protected EditText password;
+    EditText password;
     @ViewById(R.id.login_progress_bar)
-    protected ProgressBar loginProgress;
+    ProgressBar loginProgress;
     @ViewById(R.id.sign_in)
-    protected Button signInButton;
+    Button signInButton;
 
     @Bean
     protected LoginApi loginApi;
     @Bean
     protected DbHelper dbHelper;
+
+    @AfterViews
+    void init() {
+        login.setText(userPrefs.getUserName());
+        password.setText(userPrefs.getPass());
+
+        if(userPrefs.isAuthorised()) {
+            startApp();
+        }
+    }
 
     @Click(R.id.sign_in)
     protected void signIn() {
@@ -51,10 +67,19 @@ public class LoginActivity extends BaseActivity {
         );
     }
 
+    @Click(R.id.settings)
+    void openSettings() {
+        SettingsFragmentDialog_.builder().build().show(getSupportFragmentManager(), "");
+    }
+
     private void successLogin(User user) {
         hideProgress();
+        startApp();
+    }
+
+    private void startApp() {
         finish();
-        MainActivity_.intent(this).start();
+        TaskActivity_.intent(this).start();
     }
 
     private void unsuccessLogin(Throwable throwable) {

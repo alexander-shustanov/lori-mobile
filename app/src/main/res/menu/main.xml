@@ -3,4 +3,5 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/open_calendar" android:icon="@drawable/ic_calendar" app:showAsAction="always"
         android:title="@string/calendar" />
+    <item android:id="@+id/logout" app:showAsAction="collapseActionView" android:title="Log Out"/>
 </menu>

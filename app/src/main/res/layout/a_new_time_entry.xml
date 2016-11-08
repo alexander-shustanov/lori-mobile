@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -10,12 +11,11 @@
 
         <variable
             name="vm"
-            type="com.shustanov.lorimobile.activity.timeentry.NewTimeEntryVm" />
+            type="com.shustanov.lorimobile.activity.timeentry.TimeEntryVm" />
     </data>
 
 
     <FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
@@ -86,6 +86,44 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
+
+            <EditText
+                android:id="@+id/hours_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:imeOptions="actionNext"
+                android:inputType="number"
+                android:nextFocusDown="@+id/minutes_text"
+                android:nextFocusForward="@+id/minutes_text"
+                android:selectAllOnFocus="true"
+                android:text="@={vm.hours, default = 0}"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/date_text" />
+
+            <EditText
+                android:id="@+id/minutes_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="8dp"
+                android:inputType="number"
+                android:selectAllOnFocus="true"
+                android:text="@={vm.minutes, default = 0}"
+                app:layout_constraintLeft_toRightOf="@+id/textView12"
+                app:layout_constraintTop_toBottomOf="@+id/date_text" />
+
+            <TextView
+                android:id="@+id/textView12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="20dp"
+                android:text=":"
+                app:layout_constraintLeft_toRightOf="@+id/hours_text"
+                app:layout_constraintTop_toBottomOf="@+id/date_text" />
+
             <EditText
                 android:id="@+id/editText"
                 android:layout_width="0dp"
@@ -96,23 +134,22 @@
                 android:layout_marginTop="8dp"
                 android:gravity="top"
                 android:hint="Description"
-                android:isScrollContainer="true"
-                android:minLines="6"
-                android:maxLines="6"
                 android:inputType="text|textMultiLine"
+                android:isScrollContainer="true"
+                android:maxLines="6"
+                android:minLines="6"
                 android:scrollbarSize="4dp"
                 android:scrollbarStyle="insideInset"
-                android:text="@={vm.description}"
                 android:scrollbars="vertical"
+                android:text="@={vm.description}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/date_text"
+                app:layout_constraintTop_toBottomOf="@+id/hours_text"
                 app:layout_constraintVertical_bias="0.0" />
-
         </android.support.constraint.ConstraintLayout>
 
-        <include layout="@layout/m_progress"/>
+        <include layout="@layout/m_progress" />
 
     </FrameLayout>
 

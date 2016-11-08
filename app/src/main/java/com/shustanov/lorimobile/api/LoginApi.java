@@ -2,15 +2,16 @@ package com.shustanov.lorimobile.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.shustanov.lorimobile.BuildConfig;
 import com.shustanov.lorimobile.data.user.User;
 import com.shustanov.lorimobile.data.user.UserApi;
 import com.shustanov.lorimobile.data.user.UserPrefsFacade;
 
+import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
@@ -23,21 +24,26 @@ import rx.schedulers.Schedulers;
 
 @EBean(scope = EBean.Scope.Singleton)
 public class LoginApi {
+    private Api loginApi;
 
-    private final Api loginApi;
     @Bean
     UserPrefsFacade userPrefs;
     @Bean
+    ApiPrefsFacade apiPrefs;
+    @Bean
     UserApi userApi;
+
+
     private String userSessionId;
 
-    public LoginApi() {
+    @AfterInject
+    void init() {
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
 
         Gson gson = new GsonBuilder().create();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BuildConfig.DEFAULT_API_PATH)
+                .baseUrl(apiPrefs.getEndpoint())
                 .addCallAdapterFactory(rxAdapter)
                 .build();
 
@@ -45,21 +51,53 @@ public class LoginApi {
     }
 
     public Observable<User> login(String userName, String password) {
-        return loginApi.login(userName, password).
-                doOnNext(responseBody -> {
+        userPrefs.setUserName(userName);
+        userPrefs.setPass(password);
+        return loginApi.login(userName, password)
+                .doOnNext(responseBody -> {
                     try {
                         this.userSessionId = responseBody.string();
                     } catch (IOException e) {
                         throw new InvalidLoginException();
                     }
-                }).
-                flatMap(body -> userApi.queryUser(userName)).
-                doOnNext(user -> userPrefs.setUserId(user.getId())).
-                observeOn(AndroidSchedulers.mainThread());
+                })
+                .flatMap(body -> userApi.queryUser(userName))
+                .doOnNext(user -> {
+                    userPrefs.setUserId(user.getId());
+                    userPrefs.setAuthorised(true);
+                })
+                .doOnError(throwable -> userPrefs.setAuthorised(false))
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
-    private String createRequestUserQuery(String userLogin) {
-        return String.format("select us from ts$ExtUser us where us.login='%s'", userLogin);
+    public Observable<User> reLogin() {
+        String userName = userPrefs.getUserName();
+        String password = userPrefs.getPass();
+        return loginApi.login(userName, password)
+                .doOnNext(responseBody -> {
+                    try {
+                        this.userSessionId = responseBody.string();
+                    } catch (IOException e) {
+                        throw new InvalidLoginException();
+                    }
+                })
+                .flatMap(body -> userApi.queryUser(userName))
+                .doOnNext(user -> {
+                    userPrefs.setUserId(user.getId());
+                    userPrefs.setAuthorised(true);
+                })
+                .doOnError(throwable -> userPrefs.setAuthorised(false))
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<Void> logout() {
+        userPrefs.setAuthorised(false);
+        return loginApi
+                .logout(userSessionId)
+                .timeout(2000, TimeUnit.MILLISECONDS)
+                .onErrorReturn(noMatterThrowable -> null)
+                .map(body -> ((Void) null))
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     public String getUserSessionId() {
@@ -69,5 +107,8 @@ public class LoginApi {
     private interface Api {
         @GET("login")
         Observable<ResponseBody> login(@Query("u") String userName, @Query("p") String password);
+
+        @GET("logout")
+        Observable<ResponseBody> logout(@Query("s") String session);
     }
 }

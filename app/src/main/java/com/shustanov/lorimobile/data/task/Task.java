@@ -49,4 +49,25 @@ public class Task {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Task task = (Task) o;
+
+        if (id != null ? !id.equals(task.id) : task.id != null) return false;
+        if (name != null ? !name.equals(task.name) : task.name != null) return false;
+        return status != null ? status.equals(task.status) : task.status == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
+        return result;
+    }
 }

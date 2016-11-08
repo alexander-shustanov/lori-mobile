@@ -8,7 +8,8 @@ import java.util.List;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+
+import static com.shustanov.lorimobile.rx.DoOnFirst.onFirstDo;
 
 @EBean
 public abstract class Repository<Entity> {
@@ -28,32 +29,36 @@ public abstract class Repository<Entity> {
 
     public Observable<List<Entity>> getAll() {
         if (dirty) {
-            return getApi().
-                    getAll().
-                    doOnSubscribe(getDbDataSource()::clear).
-                    doOnNext(this::saveAll).
-                    doOnCompleted(() -> dirty = false).
-                    observeOn(AndroidSchedulers.mainThread());
+            return getApi()
+                    .getAll()
+                    .compose(onFirstDo(getDbDataSource()::clear))
+                    .doOnNext(this::saveAll)
+                    .doOnCompleted(() -> dirty = false)
+                    .onErrorResumeNext(
+                            throwable -> getDbDataSource()
+                                    .getAll()
+                                    .concatWith(Observable.error(throwable))
+                    )
+                    .observeOn(AndroidSchedulers.mainThread());
         } else {
-            return Observable.<List<Entity>>create(
-                    subscriber -> {
-                        subscriber.onNext(getDbDataSource().getAll());
-                        subscriber.onCompleted();
-                    }
-            )
-                    .subscribeOn(Schedulers.io());
+            return getDbDataSource()
+                    .getAll();
         }
     }
 
     public Observable<Entity> getById(String id) {
         Observable<Entity> observable;
         if (dirty) {
-            observable = getApi().getById(id);
+            observable = getApi()
+                    .getById(id)
+                    .onErrorResumeNext(
+                            throwable -> getDbDataSource()
+                                    .getById(id)
+                                    .concatWith(Observable.error(throwable))
+                    );
         } else {
-            observable = Observable.<Entity>create(subscriber -> {
-                subscriber.onNext(getDbDataSource().getById(id));
-                subscriber.onCompleted();
-            }).subscribeOn(Schedulers.io());
+            observable = getDbDataSource()
+                    .getById(id);
         }
         return observable.observeOn(AndroidSchedulers.mainThread());
     }
@@ -70,7 +75,11 @@ public abstract class Repository<Entity> {
 
     protected abstract EntityApi<Entity, ?> getApi();
 
-    public Observable<Entity> create(Entity entity) {
-        return getApi().create(entity).doOnNext(this::save);
+    public Observable<Entity> commit(Entity entity) {
+        return getApi()
+                .commit(entity)
+                .doOnNext(this::save);
     }
+
+
 }

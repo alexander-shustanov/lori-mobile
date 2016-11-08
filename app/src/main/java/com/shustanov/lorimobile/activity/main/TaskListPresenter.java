@@ -1,4 +1,4 @@
-package com.shustanov.lorimobile.fragment.tasklist;
+package com.shustanov.lorimobile.activity.main;
 
 import com.depthguru.mvp.annotations.EPresenter;
 import com.depthguru.mvp.api.Presenter;
@@ -9,6 +9,7 @@ import com.shustanov.lorimobile.data.task.TaskRepository;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import rx.subscriptions.CompositeSubscription;
@@ -24,6 +25,7 @@ public class TaskListPresenter extends Presenter<TaskListView> implements TaskLi
     private CompositeSubscription compositeSubscription;
 
     private boolean clearPending;
+    private List<Task> tasks = new ArrayList<>();
 
     @Override
     protected void onViewAttached() {
@@ -33,16 +35,17 @@ public class TaskListPresenter extends Presenter<TaskListView> implements TaskLi
     }
 
     private void onTaskGetAllError(Throwable throwable) {
-        throw new RuntimeException(throwable);
+        getView().refreshFailed(throwable);
+        getView().stopRefresh();
     }
 
     public void refresh() {
         taskRepository.refresh();
         clearPending = true;
         compositeSubscription.add(
-                taskRepository.
-                        getAll().
-                        subscribe(this::onTasksReceived, this::onTaskGetAllError, getView()::stopRefresh)
+                 taskRepository
+                        .getAll()
+                        .subscribe(this::onTasksReceived, this::onTaskGetAllError, getView()::stopRefresh)
         );
     }
 
@@ -54,10 +57,10 @@ public class TaskListPresenter extends Presenter<TaskListView> implements TaskLi
 
     private void onTasksReceived(List<Task> tasks) {
         if(clearPending) {
-            getView().clear();
+            this.tasks.clear();
             clearPending = false;
         }
-        getView().addTasks(tasks);
+        getView().setTasks(tasks);
     }
 
     @Override
@@ -65,8 +68,4 @@ public class TaskListPresenter extends Presenter<TaskListView> implements TaskLi
         getView().openAddTimeEntryActivity(task.getId());
     }
 
-    @Override
-    public void openTaskDetails(Task task) {
-        getView().openTaskDetails(task.getId());
-    }
 }

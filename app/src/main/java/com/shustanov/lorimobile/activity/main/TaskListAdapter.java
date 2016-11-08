@@ -1,6 +1,7 @@
-package com.shustanov.lorimobile.fragment.tasklist;
+package com.shustanov.lorimobile.activity.main;
 
 import android.content.Context;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,16 +44,10 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.Holder
         return tasks.get(position);
     }
 
-    void addTasks(List<Task> tasks) {
-        int position = this.tasks.size();
-        this.tasks.addAll(tasks);
-        notifyItemRangeInserted(position, tasks.size());
-    }
-
-    void clear() {
-        int size = tasks.size();
-        tasks.clear();
-        notifyItemRangeRemoved(0, size);
+    void setTasks(List<Task> tasks) {
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new TasksDiffCallback(tasks, this.tasks));
+        this.tasks = tasks;
+        diffResult.dispatchUpdatesTo(this);
     }
 
     void setListener(Listener listener) {
@@ -70,7 +65,5 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.Holder
 
     public interface Listener {
         void addTimeEntry(Task task);
-
-        void openTaskDetails(Task task);
     }
 }

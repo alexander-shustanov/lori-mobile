@@ -13,6 +13,12 @@ import org.greenrobot.greendao.Property;
 import java.util.Date;
 import java.util.List;
 
+import rx.Observable;
+import rx.schedulers.Schedulers;
+
+import static rx.Observable.defer;
+import static rx.Observable.just;
+
 @EBean(scope = EBean.Scope.Singleton)
 class TimeEntryDbDataSource extends DataSource<TimeEntry> {
     @Bean
@@ -35,7 +41,12 @@ class TimeEntryDbDataSource extends DataSource<TimeEntry> {
         return TimeEntryDao.Properties.Id;
     }
 
-    List<TimeEntry> getForWeek(Date from, Date to) {
-        return timeEntryDao.queryBuilder().where(TimeEntryDao.Properties.Date.between(from, to)).list();
+    Observable<List<TimeEntry>> getForWeek(Date from, Date to) {
+        return defer(() -> just(
+                timeEntryDao
+                        .queryBuilder()
+                        .where(TimeEntryDao.Properties.Date.between(from, to))
+                        .list()
+        )).subscribeOn(Schedulers.io());
     }
 }

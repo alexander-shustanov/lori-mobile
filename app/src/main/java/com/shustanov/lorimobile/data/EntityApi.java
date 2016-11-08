@@ -1,10 +1,13 @@
 package com.shustanov.lorimobile.data;
 
+import com.google.common.base.Throwables;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.shustanov.lorimobile.BuildConfig;
+import com.shustanov.lorimobile.api.ApiPrefsFacade;
 import com.shustanov.lorimobile.api.LoginApi;
+import com.shustanov.lorimobile.data.timeentry.TimeEntry;
 
+import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 
@@ -14,20 +17,23 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.HttpException;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 @EBean
 public abstract class EntityApi<Entity, Api> {
-
     private static final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'hh:mm:ss.SSS").create();
     @Bean
     protected LoginApi loginApi;
+    @Bean
+    protected ApiPrefsFacade apiPrefs;
+
     private Api api;
 
+    @AfterInject
     protected void init() {
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
 
@@ -48,7 +54,7 @@ public abstract class EntityApi<Entity, Api> {
         });
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BuildConfig.DEFAULT_API_PATH)
+                .baseUrl(apiPrefs.getEndpoint())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(rxAdapter)
                 .client(builder.build())
@@ -59,9 +65,11 @@ public abstract class EntityApi<Entity, Api> {
 
     public abstract Observable<List<Entity>> getAll();
 
-    public abstract Observable<Entity> create(Entity entity);
+    public abstract Observable<Entity> commit(Entity entity);
 
     public abstract Observable<Entity> getById(String id);
+
+    public abstract Observable<TimeEntry> delete(Entity entity);
 
     protected abstract Class<Api> getApiClass();
 
@@ -73,5 +81,23 @@ public abstract class EntityApi<Entity, Api> {
 
     public Api api() {
         return api;
+    }
+
+    protected <T> Observable.Transformer<T, T> reLoginOnAuthError() {
+        return observable -> observable.retryWhen(
+                errors -> {
+                    Observable<Integer> attempts = Observable.just(0).repeat().scan((attempt, next) -> attempt + 1);
+                    return errors
+                            .zipWith(attempts, (e, integer) -> {
+                                boolean isSessionExpired = e instanceof HttpException && ((HttpException) e).code() == 401;
+                                if (isSessionExpired && integer <= 1) {
+                                    return e;
+                                } else {
+                                    throw new RuntimeException(e);
+                                }
+                            })
+                            .flatMap(e -> loginApi.reLogin());
+                }
+        );
     }
 }

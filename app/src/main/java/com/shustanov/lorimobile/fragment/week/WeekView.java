@@ -17,4 +17,8 @@ interface WeekView extends View {
     void setRefreshing(boolean refreshing);
 
     void refreshFailed(Throwable throwable);
+
+    void startEditing(TimeEntry timeEntry);
+
+    void deletionFailed(Throwable throwable);
 }

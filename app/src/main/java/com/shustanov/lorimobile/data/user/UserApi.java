@@ -2,6 +2,7 @@ package com.shustanov.lorimobile.data.user;
 
 import com.shustanov.lorimobile.data.EntityApi;
 import com.shustanov.lorimobile.data.Repository;
+import com.shustanov.lorimobile.data.timeentry.TimeEntry;
 
 import org.androidannotations.annotations.EBean;
 
@@ -13,10 +14,6 @@ import rx.Observable;
 
 @EBean(scope = EBean.Scope.Singleton)
 public class UserApi extends EntityApi<User, UserApi.Api> {
-
-    UserApi() {
-        init();
-    }
 
     public Observable<User> queryUser(String userLogin) {
         return api().queryUser(userLogin).map(users -> users.get(0));
@@ -33,12 +30,17 @@ public class UserApi extends EntityApi<User, UserApi.Api> {
     }
 
     @Override
-    public Observable<User> create(User user) {
+    public Observable<User> commit(User user) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public Observable<User> getById(String id) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Observable<TimeEntry> delete(User user) {
         throw new UnsupportedOperationException();
     }
 

@@ -11,4 +11,7 @@
     <string name="invalid_credentials">Invalid credentials</string>
     <string name="calendar">Calendar</string>
     <string name="today">Today</string>
+    <string name="empty_description">No description</string>
+    <string name="restart_app_to_change_endpoint">We need restart application to change endpoint</string>
+    <string name="should_relogin">You should relogin</string>
 </resources>

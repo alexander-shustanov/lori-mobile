@@ -9,4 +9,8 @@
     <string name="invalid_credentials">Не правильная комбинация логин/пароль</string>
     <string name="calendar">Календарь</string>
     <string name="today">Сегодня</string>
+
+    <string name="empty_description">Описание отсутствует</string>
+    <string name="restart_app_to_change_endpoint">Требуется перезапустить приложение</string>
+    <string name="should_relogin">Вам следует перелогиниться</string>
 </resources>

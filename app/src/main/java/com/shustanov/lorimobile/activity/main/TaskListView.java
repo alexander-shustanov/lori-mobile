@@ -1,4 +1,4 @@
-package com.shustanov.lorimobile.fragment.tasklist;
+package com.shustanov.lorimobile.activity.main;
 
 import com.depthguru.mvp.api.View;
 import com.shustanov.lorimobile.data.task.Task;
@@ -6,13 +6,11 @@ import com.shustanov.lorimobile.data.task.Task;
 import java.util.List;
 
 public interface TaskListView extends View {
-    void addTasks(List<Task> tasks);
+    void setTasks(List<Task> tasks);
 
     void stopRefresh();
 
-    void clear();
-
     void openAddTimeEntryActivity(String id);
 
-    void openTaskDetails(String id);
+    void refreshFailed(Throwable throwable);
 }

@@ -5,7 +5,7 @@ apply plugin: 'org.greenrobot.greendao'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    buildToolsVersion "24.0.3"
 
     defaultConfig {
         applicationId "com.shustanov.lorimobile"
@@ -13,7 +13,7 @@ android {
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
-        buildConfigField 'String','DEFAULT_API_PATH','"http://192.168.1.7:8080/app/dispatch/api/"'
+        buildConfigField 'String','DEFAULT_API_PATH','"http://192.168.1.8:8080/app/dispatch/api/"'
     }
 
     dataBinding {
@@ -65,12 +65,14 @@ dependencies {
 
     compile group: 'joda-time', name: 'joda-time', version: '2.9.4'
 
-    apt "com.depthguru:mvp-processor:0.1"
-    compile "com.depthguru:mvp-api:0.1"
+    apt "com.depthguru:mvp-processor:0.2"
+    compile "com.depthguru:mvp-api:0.2"
 
     compile 'org.greenrobot:greendao:3.1.1'
 
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha9'
+
+    compile 'com.philliphsu:bottomsheetpickers:2.0.0'
 
     testCompile 'junit:junit:4.12'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta3'
 }

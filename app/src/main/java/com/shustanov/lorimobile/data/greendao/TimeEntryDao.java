@@ -26,10 +26,11 @@ public class TimeEntryDao extends AbstractDao<TimeEntry, Void> {
     public static class Properties {
         public final static Property Id = new Property(0, String.class, "id", false, "ID");
         public final static Property Date = new Property(1, java.util.Date.class, "date", false, "DATE");
-        public final static Property TimeInHours = new Property(2, String.class, "timeInHours", false, "TIME_IN_HOURS");
-        public final static Property TimeInMinutes = new Property(3, String.class, "timeInMinutes", false, "TIME_IN_MINUTES");
-        public final static Property Status = new Property(4, String.class, "status", false, "STATUS");
-        public final static Property TaskId = new Property(5, String.class, "taskId", false, "TASK_ID");
+        public final static Property TimeInMinutes = new Property(2, int.class, "timeInMinutes", false, "TIME_IN_MINUTES");
+        public final static Property Status = new Property(3, String.class, "status", false, "STATUS");
+        public final static Property TaskId = new Property(4, String.class, "taskId", false, "TASK_ID");
+        public final static Property TaskName = new Property(5, String.class, "taskName", false, "TASK_NAME");
+        public final static Property Description = new Property(6, String.class, "description", false, "DESCRIPTION");
     }
 
 
@@ -47,10 +48,11 @@ public class TimeEntryDao extends AbstractDao<TimeEntry, Void> {
         db.execSQL("CREATE TABLE " + constraint + "\"TIME_ENTRY\" (" + //
                 "\"ID\" TEXT UNIQUE ," + // 0: id
                 "\"DATE\" INTEGER," + // 1: date
-                "\"TIME_IN_HOURS\" TEXT," + // 2: timeInHours
-                "\"TIME_IN_MINUTES\" TEXT," + // 3: timeInMinutes
-                "\"STATUS\" TEXT," + // 4: status
-                "\"TASK_ID\" TEXT);"); // 5: taskId
+                "\"TIME_IN_MINUTES\" INTEGER NOT NULL ," + // 2: timeInMinutes
+                "\"STATUS\" TEXT," + // 3: status
+                "\"TASK_ID\" TEXT," + // 4: taskId
+                "\"TASK_NAME\" TEXT," + // 5: taskName
+                "\"DESCRIPTION\" TEXT);"); // 6: description
     }
 
     /** Drops the underlying database table. */
@@ -72,25 +74,26 @@ public class TimeEntryDao extends AbstractDao<TimeEntry, Void> {
         if (date != null) {
             stmt.bindLong(2, date.getTime());
         }
- 
-        String timeInHours = entity.getTimeInHours();
-        if (timeInHours != null) {
-            stmt.bindString(3, timeInHours);
-        }
- 
-        String timeInMinutes = entity.getTimeInMinutes();
-        if (timeInMinutes != null) {
-            stmt.bindString(4, timeInMinutes);
-        }
+        stmt.bindLong(3, entity.getTimeInMinutes());
  
         String status = entity.getStatus();
         if (status != null) {
-            stmt.bindString(5, status);
+            stmt.bindString(4, status);
         }
  
         String taskId = entity.getTaskId();
         if (taskId != null) {
-            stmt.bindString(6, taskId);
+            stmt.bindString(5, taskId);
+        }
+ 
+        String taskName = entity.getTaskName();
+        if (taskName != null) {
+            stmt.bindString(6, taskName);
+        }
+ 
+        String description = entity.getDescription();
+        if (description != null) {
+            stmt.bindString(7, description);
         }
     }
 
@@ -107,25 +110,26 @@ public class TimeEntryDao extends AbstractDao<TimeEntry, Void> {
         if (date != null) {
             stmt.bindLong(2, date.getTime());
         }
- 
-        String timeInHours = entity.getTimeInHours();
-        if (timeInHours != null) {
-            stmt.bindString(3, timeInHours);
-        }
- 
-        String timeInMinutes = entity.getTimeInMinutes();
-        if (timeInMinutes != null) {
-            stmt.bindString(4, timeInMinutes);
-        }
+        stmt.bindLong(3, entity.getTimeInMinutes());
  
         String status = entity.getStatus();
         if (status != null) {
-            stmt.bindString(5, status);
+            stmt.bindString(4, status);
         }
  
         String taskId = entity.getTaskId();
         if (taskId != null) {
-            stmt.bindString(6, taskId);
+            stmt.bindString(5, taskId);
+        }
+ 
+        String taskName = entity.getTaskName();
+        if (taskName != null) {
+            stmt.bindString(6, taskName);
+        }
+ 
+        String description = entity.getDescription();
+        if (description != null) {
+            stmt.bindString(7, description);
         }
     }
 
@@ -139,10 +143,11 @@ public class TimeEntryDao extends AbstractDao<TimeEntry, Void> {
         TimeEntry entity = new TimeEntry( //
             cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0), // id
             cursor.isNull(offset + 1) ? null : new java.util.Date(cursor.getLong(offset + 1)), // date
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // timeInHours
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // timeInMinutes
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // status
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // taskId
+            cursor.getInt(offset + 2), // timeInMinutes
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // status
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // taskId
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // taskName
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6) // description
         );
         return entity;
     }
@@ -151,10 +156,11 @@ public class TimeEntryDao extends AbstractDao<TimeEntry, Void> {
     public void readEntity(Cursor cursor, TimeEntry entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0));
         entity.setDate(cursor.isNull(offset + 1) ? null : new java.util.Date(cursor.getLong(offset + 1)));
-        entity.setTimeInHours(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setTimeInMinutes(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setStatus(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setTaskId(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setTimeInMinutes(cursor.getInt(offset + 2));
+        entity.setStatus(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setTaskId(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setTaskName(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setDescription(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
      }
     
     @Override

@@ -8,9 +8,9 @@ public class TimeEntryServerView {
 
     public String id;
     public Date date;
-    public String timeInHours;
     public String timeInMinutes;
     public String status;
+    public String description;
     public Task task;
     public User user;
 
@@ -18,9 +18,9 @@ public class TimeEntryServerView {
         TimeEntryServerView entryCommit = new TimeEntryServerView();
         entryCommit.id = timeEntry.getId();
         entryCommit.date = timeEntry.getDate();
-        entryCommit.timeInHours = timeEntry.getTimeInHours();
-        entryCommit.timeInMinutes = timeEntry.getTimeInMinutes();
+        entryCommit.timeInMinutes = String.valueOf(timeEntry.getTimeInMinutes());
         entryCommit.status = timeEntry.getStatus();
+        entryCommit.description = timeEntry.getDescription();
 
         entryCommit.user = new User(userId);
         entryCommit.task = new Task(timeEntry.getTaskId());
@@ -28,12 +28,19 @@ public class TimeEntryServerView {
         return entryCommit;
     }
 
+    public static TimeEntryServerView buildForRemove(TimeEntry timeEntry) {
+        TimeEntryServerView entryCommit = new TimeEntryServerView();
+        entryCommit.id = timeEntry.getId();
+        return entryCommit;
+    }
+
     public TimeEntry buildTimeEntry() {
-        return new TimeEntry(id, date, timeInHours, timeInMinutes, status, task.id);
+        return new TimeEntry(id,date, Integer.parseInt(timeInMinutes), status, task != null ? task.id : null, task != null ? task.name : null, description);
     }
 
     static class Task {
         String id;
+        String name;
 
         public Task(String id) {
             this.id = id;

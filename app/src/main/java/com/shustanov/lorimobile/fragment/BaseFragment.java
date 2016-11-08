@@ -1,14 +1,19 @@
 package com.shustanov.lorimobile.fragment;
 
+import android.content.Intent;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 
 import com.shustanov.lorimobile.R;
 import com.shustanov.lorimobile.activity.BaseActivity;
+import com.shustanov.lorimobile.activity.login.LoginActivity_;
 
 import org.androidannotations.annotations.EFragment;
 
 import java.net.ConnectException;
+
+import retrofit2.adapter.rxjava.HttpException;
 
 @EFragment
 public abstract class BaseFragment extends Fragment {
@@ -20,11 +25,22 @@ public abstract class BaseFragment extends Fragment {
         ((BaseActivity) getActivity()).snackBar(textId);
     }
 
-    protected boolean checkNetwork(Throwable throwable) {
+    protected boolean checkNetworkAndLogin(Throwable throwable) {
         if(throwable instanceof ConnectException) {
             snackBar(R.string.check_network);
             return true;
+        } else if(throwable instanceof HttpException) {
+            if(((HttpException) throwable).code() == 401) {
+                snackBar(R.string.should_relogin);
+                getActivity().finish();
+                getActivity().startActivity(new Intent(getContext(), LoginActivity_.class));
+                return true;
+            }
         }
         return false;
+    }
+
+    protected void setupRefreshLayout(SwipeRefreshLayout refreshLayout) {
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorAccent));
     }
 }

@@ -1,17 +1,21 @@
 package com.shustanov.lorimobile.activity;
 
+import android.content.Intent;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
 import com.shustanov.lorimobile.R;
+import com.shustanov.lorimobile.activity.login.LoginActivity_;
 
 import org.androidannotations.annotations.EActivity;
 
 import java.net.ConnectException;
 
+import retrofit2.adapter.rxjava.HttpException;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
@@ -58,5 +62,24 @@ public abstract class BaseActivity extends AppCompatActivity {
             return true;
         }
         return false;
+    }
+
+    protected boolean checkNetworkAndLogin(Throwable throwable) {
+        if(throwable instanceof ConnectException) {
+            snackBar(R.string.check_network);
+            return true;
+        } else if(throwable instanceof HttpException) {
+            if(((HttpException) throwable).code() == 401) {
+                snackBar(R.string.should_relogin);
+                finish();
+                startActivity(new Intent(this, LoginActivity_.class));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected void setupRefreshLayout(SwipeRefreshLayout refreshLayout) {
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorAccent));
     }
 }

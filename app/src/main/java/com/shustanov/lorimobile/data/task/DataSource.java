@@ -5,6 +5,9 @@ import org.greenrobot.greendao.Property;
 
 import java.util.List;
 
+import rx.Observable;
+import rx.schedulers.Schedulers;
+
 public abstract class DataSource<Entity> {
     public void save(Entity entity) {
         getDao().insertOrReplace(entity);
@@ -14,12 +17,16 @@ public abstract class DataSource<Entity> {
         getDao().delete(entity);
     }
 
-    public List<Entity> getAll() {
-        return getDao().loadAll();
+    public Observable<List<Entity>> getAll() {
+        return Observable.defer(() -> Observable.just(getDao().loadAll()))
+                .subscribeOn(Schedulers.io());
     }
 
-    public Entity getById(String id) {
-        return getDao().queryBuilder().where(getIdProperty().eq(id)).build().list().get(0);
+    public Observable<Entity> getById(String id) {
+        return Observable.defer(() -> Observable.just(getDao().queryBuilder().where(getIdProperty().eq(id)).build().list()))
+                .subscribeOn(Schedulers.io())
+                .flatMapIterable(entities -> entities)
+                .first();
     }
 
     public void saveAll(List<Entity> entities) {

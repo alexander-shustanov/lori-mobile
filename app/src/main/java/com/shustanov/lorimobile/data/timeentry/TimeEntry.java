@@ -10,43 +10,48 @@ import java.util.Date;
 
 @Entity
 public class TimeEntry {
+    public static final String ID_PREFIX = "ts$TimeEntry-";
     @Unique
     private String id;
     @Property
     private Date date;
     @Property
-    private String timeInHours;
-    @Property
-    private String timeInMinutes;
+    private int timeInMinutes;
     @Property
     private String status;
     @Property
     private String taskId;
+    @Property
+    private String taskName;
+    @Property
+    private String description;
 
     @Keep
-    public TimeEntry(Date date, String timeInHours,
-                     String timeInMinutes, String status, String taskId) {
+    public TimeEntry(Date date,
+                     int timeInMinutes, String status, String taskId, String taskName, String description) {
         this.id = "NEW-ts$TimeEntry";
         this.date = date;
-        this.timeInHours = timeInHours;
         this.timeInMinutes = timeInMinutes;
         this.status = status;
         this.taskId = taskId;
+        this.description = description;
+        this.taskName = taskName;
+    }
+
+    @Generated(hash = 1130902128)
+    public TimeEntry(String id, Date date, int timeInMinutes, String status, String taskId, String taskName,
+            String description) {
+        this.id = id;
+        this.date = date;
+        this.timeInMinutes = timeInMinutes;
+        this.status = status;
+        this.taskId = taskId;
+        this.taskName = taskName;
+        this.description = description;
     }
 
     @Generated(hash = 561589019)
     public TimeEntry() {
-    }
-
-    @Generated(hash = 1914244752)
-    public TimeEntry(String id, Date date, String timeInHours,
-            String timeInMinutes, String status, String taskId) {
-        this.id = id;
-        this.date = date;
-        this.timeInHours = timeInHours;
-        this.timeInMinutes = timeInMinutes;
-        this.status = status;
-        this.taskId = taskId;
     }
 
     public String getId() {
@@ -65,19 +70,11 @@ public class TimeEntry {
         this.date = date;
     }
 
-    public String getTimeInHours() {
-        return this.timeInHours;
-    }
-
-    public void setTimeInHours(String timeInHours) {
-        this.timeInHours = timeInHours;
-    }
-
-    public String getTimeInMinutes() {
+    public int getTimeInMinutes() {
         return this.timeInMinutes;
     }
 
-    public void setTimeInMinutes(String timeInMinutes) {
+    public void setTimeInMinutes(int timeInMinutes) {
         this.timeInMinutes = timeInMinutes;
     }
 
@@ -97,5 +94,19 @@ public class TimeEntry {
         this.taskId = taskId;
     }
 
+    public String getTaskName() {
+        return taskName;
+    }
 
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }
