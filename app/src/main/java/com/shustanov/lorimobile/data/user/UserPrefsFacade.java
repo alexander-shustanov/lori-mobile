@@ -2,7 +2,6 @@ package com.shustanov.lorimobile.data.user;
 
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.sharedpreferences.Pref;
-import org.androidannotations.api.sharedpreferences.StringPrefField;
 
 @EBean(scope = EBean.Scope.Singleton)
 public class UserPrefsFacade {
@@ -13,28 +12,28 @@ public class UserPrefsFacade {
         return userPrefs.userId().get();
     }
 
-    public String getUserName() {
-        return userPrefs.userName().get();
-    }
-
-    public String getPass() {
-        return userPrefs.pass().get();
-    }
-
-    public boolean isAuthorised() {
-        return userPrefs.authorised().get();
-    }
-
     public void setUserId(String userId) {
         userPrefs.userId().put(userId);
+    }
+
+    public String getUserName() {
+        return userPrefs.userName().get();
     }
 
     public void setUserName(String userName) {
         userPrefs.userName().put(userName);
     }
 
+    public String getPass() {
+        return userPrefs.pass().get();
+    }
+
     public void setPass(String pass) {
         userPrefs.pass().put(pass);
+    }
+
+    public boolean isAuthorised() {
+        return userPrefs.authorised().get();
     }
 
     public void setAuthorised(boolean authorised) {

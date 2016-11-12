@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#212121</color>
     <color name="colorAccent">#197de1</color>
     <color name="white">#ffffff</color>
+    <color name="tab_selected">#dddddd</color>
     <color name="image_button">#424242</color>
     
     <color name="toolbar_items">@color/white</color>

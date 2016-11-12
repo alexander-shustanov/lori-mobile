@@ -1,10 +1,8 @@
 package com.shustanov.lorimobile.api;
 
 import org.androidannotations.annotations.AfterInject;
-import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.sharedpreferences.Pref;
-import org.androidannotations.api.sharedpreferences.StringPrefField;
 
 /**
  * ApiPrefsFacade

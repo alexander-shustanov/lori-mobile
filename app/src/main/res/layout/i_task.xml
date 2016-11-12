@@ -10,7 +10,7 @@
 
         <variable
             name="listener"
-            type="com.shustanov.lorimobile.activity.main.TaskListAdapter.Listener" />
+            type="com.shustanov.lorimobile.ui.fragment.task.TaskListAdapter.Listener" />
     </data>
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -38,7 +38,7 @@
             app:layout_constraintLeft_toLeftOf="parent" />
 
         <ImageButton
-            android:background="?selectableItemBackgroundBorderless"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:onClick="@{() -> listener.addTimeEntry(task)}"

@@ -14,4 +14,5 @@
     <string name="empty_description">No description</string>
     <string name="restart_app_to_change_endpoint">We need restart application to change endpoint</string>
     <string name="should_relogin">You should relogin</string>
+    <string name="projects_tab">Projects</string>
 </resources>

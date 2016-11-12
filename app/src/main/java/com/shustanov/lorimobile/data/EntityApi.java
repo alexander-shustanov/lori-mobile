@@ -1,6 +1,5 @@
 package com.shustanov.lorimobile.data;
 
-import com.google.common.base.Throwables;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.shustanov.lorimobile.api.ApiPrefsFacade;

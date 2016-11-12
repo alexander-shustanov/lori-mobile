@@ -1,7 +1,5 @@
 package com.shustanov.lorimobile.data;
 
-import com.shustanov.lorimobile.data.task.DataSource;
-
 import org.androidannotations.annotations.EBean;
 
 import java.util.List;

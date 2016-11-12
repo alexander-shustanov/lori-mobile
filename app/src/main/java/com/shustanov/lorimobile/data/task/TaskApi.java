@@ -4,6 +4,7 @@ import com.shustanov.lorimobile.data.EntityApi;
 import com.shustanov.lorimobile.data.Repository;
 import com.shustanov.lorimobile.data.timeentry.TimeEntry;
 import com.shustanov.lorimobile.rx.BatchLoading;
+import com.shustanov.lorimobile.rx.Eq;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
@@ -13,6 +14,8 @@ import java.util.List;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 import rx.Observable;
+
+import static com.shustanov.lorimobile.rx.Eq.eq;
 
 @EBean(scope = EBean.Scope.Singleton)
 public class TaskApi extends EntityApi<Task, TaskApi.Api> {
@@ -25,6 +28,9 @@ public class TaskApi extends EntityApi<Task, TaskApi.Api> {
     public Observable<List<Task>> getAll() {
         return BatchLoading
                 .create(first -> api().getAll(first, BATCH_SIZE), BATCH_SIZE)
+                .flatMapIterable(eq())
+                .map(TaskServerView::buildEntity)
+                .buffer(BATCH_SIZE)
                 .compose(reLoginOnAuthError());
     }
 
@@ -37,6 +43,9 @@ public class TaskApi extends EntityApi<Task, TaskApi.Api> {
     public Observable<Task> getById(String id) {
         return api()
                 .getById(id)
+                .flatMapIterable(eq())
+                .first()
+                .map(TaskServerView::buildEntity)
                 .compose(reLoginOnAuthError());
 
     }
@@ -58,12 +67,19 @@ public class TaskApi extends EntityApi<Task, TaskApi.Api> {
 
     interface Api {
 
-        @GET("query.json?e=ts$Task&q=select task from ts$Task task")
-        Observable<List<Task>> getAll(
+        @GET("query.json" +
+                "?e=ts$Task" +
+                "&q=select task from ts$Task task" +
+                "&view=task-full")
+        Observable<List<TaskServerView>> getAll(
                 @Query("first") Integer first,
                 @Query("max") Integer max);
 
-        @GET("find.json?")
-        Observable<Task> getById(@Query("e") String id);
+        @GET("query.json" +
+                "?e=ts$Task" +
+                "&view=task-full" +
+                "&q=select task from ts$Task task " +
+                "   where task.id = :id")
+        Observable<List<TaskServerView>> getById(@Query("id") String id);
     }
 }

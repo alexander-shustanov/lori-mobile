@@ -69,7 +69,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
-            android:text="@{utils.printFullDate(timeEntry.date)}"
+            android:text="@{utils.printFullDate(timeEntry.date), default = `date`}"
             app:layout_constraintLeft_toRightOf="@+id/textView"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -77,7 +77,7 @@
             android:id="@+id/textView6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="new"
+            android:text="@{timeEntry.status, default = new}"
             android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@+id/textView"
             android:layout_marginStart="16dp"
@@ -89,7 +89,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="@{timeEntryViewUtils.getElapsedTime(timeEntry)}"
+            android:text="@{timeEntryViewUtils.getElapsedTime(timeEntry), default = `Elapsed time`}"
             app:layout_constraintLeft_toRightOf="@+id/textView6"
             app:layout_constraintTop_toBottomOf="@+id/textView" />
 
@@ -99,7 +99,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:text="@{timeEntry.description ?? @string/empty_description}"
+            android:text="@{timeEntry.description ?? @string/empty_description, default = Description}"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView6" />
 

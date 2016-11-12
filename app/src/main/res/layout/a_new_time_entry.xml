@@ -11,7 +11,7 @@
 
         <variable
             name="vm"
-            type="com.shustanov.lorimobile.activity.timeentry.TimeEntryVm" />
+            type="com.shustanov.lorimobile.ui.activity.timeentry.TimeEntryVm" />
     </data>
 
 

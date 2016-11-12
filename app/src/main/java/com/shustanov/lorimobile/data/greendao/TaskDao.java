@@ -27,6 +27,7 @@ public class TaskDao extends AbstractDao<Task, Void> {
         public final static Property Id = new Property(0, String.class, "id", false, "ID");
         public final static Property Name = new Property(1, String.class, "name", false, "NAME");
         public final static Property Status = new Property(2, String.class, "status", false, "STATUS");
+        public final static Property Project = new Property(3, String.class, "project", false, "PROJECT");
     }
 
 
@@ -44,7 +45,8 @@ public class TaskDao extends AbstractDao<Task, Void> {
         db.execSQL("CREATE TABLE " + constraint + "\"TASK\" (" + //
                 "\"ID\" TEXT UNIQUE ," + // 0: id
                 "\"NAME\" TEXT," + // 1: name
-                "\"STATUS\" TEXT);"); // 2: status
+                "\"STATUS\" TEXT," + // 2: status
+                "\"PROJECT\" TEXT);"); // 3: project
     }
 
     /** Drops the underlying database table. */
@@ -71,6 +73,11 @@ public class TaskDao extends AbstractDao<Task, Void> {
         if (status != null) {
             stmt.bindString(3, status);
         }
+ 
+        String project = entity.getProject();
+        if (project != null) {
+            stmt.bindString(4, project);
+        }
     }
 
     @Override
@@ -91,6 +98,11 @@ public class TaskDao extends AbstractDao<Task, Void> {
         if (status != null) {
             stmt.bindString(3, status);
         }
+ 
+        String project = entity.getProject();
+        if (project != null) {
+            stmt.bindString(4, project);
+        }
     }
 
     @Override
@@ -103,7 +115,8 @@ public class TaskDao extends AbstractDao<Task, Void> {
         Task entity = new Task( //
             cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // name
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2) // status
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // status
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3) // project
         );
         return entity;
     }
@@ -113,6 +126,7 @@ public class TaskDao extends AbstractDao<Task, Void> {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0));
         entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setStatus(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setProject(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
      }
     
     @Override

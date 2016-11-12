@@ -14,12 +14,15 @@ public class Task {
     private String name;
     @Property
     private String status;
+    @Property
+    private String project;
 
     @Keep
-    public Task(String id, String name, String status) {
+    public Task(String id, String name, String status, String project) {
         this.id = id;
         this.name = name;
         this.status = status;
+        this.project = project;
     }
 
     @Generated(hash = 733837707)
@@ -69,5 +72,13 @@ public class Task {
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (status != null ? status.hashCode() : 0);
         return result;
+    }
+
+    public String getProject() {
+        return this.project;
+    }
+
+    public void setProject(String project) {
+        this.project = project;
     }
 }

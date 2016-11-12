@@ -2,12 +2,12 @@ package com.shustanov.lorimobile.data.timeentry;
 
 import android.text.format.DateFormat;
 
-import com.shustanov.lorimobile.api.TimeEntryServerView;
 import com.shustanov.lorimobile.data.Commit;
 import com.shustanov.lorimobile.data.EntityApi;
 import com.shustanov.lorimobile.data.Repository;
 import com.shustanov.lorimobile.data.user.UserPrefsFacade;
 import com.shustanov.lorimobile.rx.BatchLoading;
+import com.shustanov.lorimobile.rx.Eq;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
@@ -21,6 +21,8 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 import rx.Observable;
 import rx.schedulers.Schedulers;
+
+import static com.shustanov.lorimobile.rx.Eq.eq;
 
 @EBean(scope = EBean.Scope.Singleton)
 public class TimeEntryApi extends EntityApi<TimeEntry, TimeEntryApi.Api> {
@@ -38,8 +40,8 @@ public class TimeEntryApi extends EntityApi<TimeEntry, TimeEntryApi.Api> {
                 .create(first -> api().getAll(first, BATCH_SIZE, userPrefs.getUserName()), BATCH_SIZE)
                 .compose(reLoginOnAuthError())
                 .observeOn(Schedulers.computation())
-                .flatMapIterable(timeEntryServerViews -> timeEntryServerViews)
-                .map(TimeEntryServerView::buildTimeEntry)
+                .flatMapIterable(eq())
+                .map(TimeEntryServerView::buildEntity)
                 .buffer(BATCH_SIZE);
     }
 
@@ -49,8 +51,8 @@ public class TimeEntryApi extends EntityApi<TimeEntry, TimeEntryApi.Api> {
         return api()
                 .commit(commit)
                 .compose(reLoginOnAuthError())
-                .map(entities -> entities.get(0))
-                .map(TimeEntryServerView::buildTimeEntry)
+                .flatMapIterable(eq())
+                .map(TimeEntryServerView::buildEntity)
                 .doOnNext(getRepository()::save);
     }
 
@@ -59,9 +61,9 @@ public class TimeEntryApi extends EntityApi<TimeEntry, TimeEntryApi.Api> {
         return api()
                 .getById(id.replace(TimeEntry.ID_PREFIX, ""))
                 .compose(reLoginOnAuthError())
-                .filter(o -> !o.isEmpty())
-                .map(timeEntryServerViews -> timeEntryServerViews.get(0))
-                .map(TimeEntryServerView::buildTimeEntry);
+                .flatMapIterable(eq())
+                .first()
+                .map(TimeEntryServerView::buildEntity);
     }
 
     @Override
@@ -70,9 +72,9 @@ public class TimeEntryApi extends EntityApi<TimeEntry, TimeEntryApi.Api> {
         return api()
                 .commit(commit)
                 .compose(reLoginOnAuthError())
-                .filter(o -> !o.isEmpty())
-                .map(timeEntryServerViews -> timeEntryServerViews.get(0))
-                .map(TimeEntryServerView::buildTimeEntry);
+                .flatMapIterable(eq())
+                .map(TimeEntryServerView::buildEntity)
+                .firstOrDefault(timeEntry);
     }
 
     @Override
@@ -94,26 +96,36 @@ public class TimeEntryApi extends EntityApi<TimeEntry, TimeEntryApi.Api> {
                         BATCH_SIZE
                 )
                 .observeOn(Schedulers.computation())
-                .flatMapIterable(self -> self)
-                .map(TimeEntryServerView::buildTimeEntry)
+                .flatMapIterable(eq())
+                .map(TimeEntryServerView::buildEntity)
                 .buffer(BATCH_SIZE);
     }
 
     interface Api {
-        @GET("query.json?e=ts$TimeEntry&view=timeEntry-browse&q=select te from ts$TimeEntry te where te.createdBy = :userName")
+        @GET("query.json" +
+                "?e=ts$TimeEntry" +
+                "&view=timeEntry-browse&q=select te from ts$TimeEntry te where te.createdBy = :userName")
         Observable<List<TimeEntryServerView>> getAll(
                 @Query("first") Integer first,
                 @Query("max") Integer max,
                 @Query("userName") String userName);
 
-        @GET("query.json?e=ts$TimeEntry&view=timeEntry-browse&q=select te from ts$TimeEntry te where te.date between :start and :end&start_type=date&end_type=date")
+        @GET("query.json" +
+                "?e=ts$TimeEntry" +
+                "&view=timeEntry-browse" +
+                "&q=select te from ts$TimeEntry te where te.date between :start and :end" +
+                "&start_type=date" +
+                "&end_type=date")
         Observable<List<TimeEntryServerView>> queryForWeek(
                 @Query("start") CharSequence start,
                 @Query("end") CharSequence end,
                 @Query("first") Integer first,
                 @Query("max") Integer max);
 
-        @GET("query.json?e=ts$TimeEntry&view=timeEntry-browse&q=select te from ts$TimeEntry te where te.id = :id")
+        @GET("query.json" +
+                "?e=ts$TimeEntry" +
+                "&view=timeEntry-browse" +
+                "&q=select te from ts$TimeEntry te where te.id = :id")
         Observable<List<TimeEntryServerView>> getById(@Query("id") String id);
 
         @POST("commit?view=timeEntry-browse")

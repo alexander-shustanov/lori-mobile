@@ -23,6 +23,7 @@ public class DaoMaster extends AbstractDaoMaster {
     public static void createAllTables(Database db, boolean ifNotExists) {
         TimeEntryDao.createTable(db, ifNotExists);
         UserDao.createTable(db, ifNotExists);
+        ProjectDao.createTable(db, ifNotExists);
         TaskDao.createTable(db, ifNotExists);
     }
 
@@ -30,6 +31,7 @@ public class DaoMaster extends AbstractDaoMaster {
     public static void dropAllTables(Database db, boolean ifExists) {
         TimeEntryDao.dropTable(db, ifExists);
         UserDao.dropTable(db, ifExists);
+        ProjectDao.dropTable(db, ifExists);
         TaskDao.dropTable(db, ifExists);
     }
 
@@ -51,6 +53,7 @@ public class DaoMaster extends AbstractDaoMaster {
         super(db, SCHEMA_VERSION);
         registerDaoClass(TimeEntryDao.class);
         registerDaoClass(UserDao.class);
+        registerDaoClass(ProjectDao.class);
         registerDaoClass(TaskDao.class);
     }
 

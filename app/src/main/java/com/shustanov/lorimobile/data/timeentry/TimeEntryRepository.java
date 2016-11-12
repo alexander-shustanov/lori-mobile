@@ -3,7 +3,7 @@ package com.shustanov.lorimobile.data.timeentry;
 
 import com.shustanov.lorimobile.data.EntityApi;
 import com.shustanov.lorimobile.data.Repository;
-import com.shustanov.lorimobile.data.task.DataSource;
+import com.shustanov.lorimobile.data.DataSource;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;

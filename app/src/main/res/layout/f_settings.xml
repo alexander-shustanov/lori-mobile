@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.shustanov.lorimobile.fragment.settings.SettingsVm" />
+            type="com.shustanov.lorimobile.ui.fragment.settings.SettingsVm" />
 
         <import
             alias="View"

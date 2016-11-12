@@ -2,7 +2,7 @@ package com.shustanov.lorimobile.data.timeentry;
 
 import com.shustanov.lorimobile.data.DbHelper;
 import com.shustanov.lorimobile.data.greendao.TimeEntryDao;
-import com.shustanov.lorimobile.data.task.DataSource;
+import com.shustanov.lorimobile.data.DataSource;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Bean;

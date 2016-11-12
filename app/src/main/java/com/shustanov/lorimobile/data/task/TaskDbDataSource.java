@@ -1,5 +1,6 @@
 package com.shustanov.lorimobile.data.task;
 
+import com.shustanov.lorimobile.data.DataSource;
 import com.shustanov.lorimobile.data.DbHelper;
 import com.shustanov.lorimobile.data.greendao.TaskDao;
 

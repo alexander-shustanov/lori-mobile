@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.shustanov.lorimobile.data.greendao.DaoMaster;
 import com.shustanov.lorimobile.data.greendao.DaoSession;
+import com.shustanov.lorimobile.data.greendao.ProjectDao;
 import com.shustanov.lorimobile.data.greendao.TaskDao;
 import com.shustanov.lorimobile.data.greendao.TimeEntryDao;
 import com.shustanov.lorimobile.data.greendao.UserDao;
@@ -16,7 +17,7 @@ public class DbHelper extends DaoMaster.OpenHelper {
     private DaoMaster daoMaster;
     private DaoSession session;
 
-    public DbHelper(Context context) {
+    DbHelper(Context context) {
         super(context, "lori");
         daoMaster = new DaoMaster(getWritableDatabase());
         session = daoMaster.newSession();
@@ -32,6 +33,10 @@ public class DbHelper extends DaoMaster.OpenHelper {
 
     public UserDao getUserDao() {
         return session.getUserDao();
+    }
+
+    public ProjectDao getProjectDao() {
+        return session.getProjectDao();
     }
 
     public TimeEntryDao getTimeEntryDao() {

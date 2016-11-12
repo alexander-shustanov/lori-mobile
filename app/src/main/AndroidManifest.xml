@@ -11,7 +11,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".activity.login.LoginActivity_"
+            android:name=".ui.activity.login.LoginActivity_"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,13 +19,13 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.main.TaskActivity_" />
+        <activity android:name=".ui.activity.main.MainActivity_" />
 
         <activity
-            android:name=".activity.timeentry.NewTimeEntryActivity_"
+            android:name=".ui.activity.timeentry.NewTimeEntryActivity_"
             android:windowSoftInputMode="adjustResize" />
 
-        <activity android:name=".activity.calendar.CalendarActivity_" />
+        <activity android:name=".ui.activity.calendar.CalendarActivity_" />
 
     </application>
 
