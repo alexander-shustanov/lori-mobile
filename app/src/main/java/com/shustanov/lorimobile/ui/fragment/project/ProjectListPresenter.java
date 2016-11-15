@@ -27,8 +27,8 @@ public class ProjectListPresenter extends ListViewPresenter<Project, ProjectList
     protected ProjectRepository projectRepository;
 
     @Override
-    public void addTimeEntry(Project task) {
-        getView().openAddTimeEntryActivity(task.getId());
+    public void addTimeEntry(Project project) {
+        getView().openAddTimeEntryActivity(project.getId());
     }
 
     @Override

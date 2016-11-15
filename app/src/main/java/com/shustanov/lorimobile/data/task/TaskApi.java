@@ -2,9 +2,9 @@ package com.shustanov.lorimobile.data.task;
 
 import com.shustanov.lorimobile.data.EntityApi;
 import com.shustanov.lorimobile.data.Repository;
+import com.shustanov.lorimobile.data.project.Project;
 import com.shustanov.lorimobile.data.timeentry.TimeEntry;
 import com.shustanov.lorimobile.rx.BatchLoading;
-import com.shustanov.lorimobile.rx.Eq;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
@@ -65,6 +65,18 @@ public class TaskApi extends EntityApi<Task, TaskApi.Api> {
         return taskRepository;
     }
 
+    public Observable<List<Task>> getByProject(Project project) {
+        String projectId = project.getId().replace("ts$Project-", "");
+        return BatchLoading
+                .create(first -> api()
+                        .getByProject(first, BATCH_SIZE, projectId)
+                        .compose(reLoginOnAuthError())
+                        , BATCH_SIZE)
+                .flatMapIterable(eq())
+                .map(TaskServerView::buildEntity)
+                .buffer(BATCH_SIZE);
+    }
+
     interface Api {
 
         @GET("query.json" +
@@ -74,6 +86,15 @@ public class TaskApi extends EntityApi<Task, TaskApi.Api> {
         Observable<List<TaskServerView>> getAll(
                 @Query("first") Integer first,
                 @Query("max") Integer max);
+
+        @GET("query.json" +
+                "?e=ts$Task" +
+                "&q=select task from ts$Task task where task.project.id = :project" +
+                "&view=task-full")
+        Observable<List<TaskServerView>> getByProject(
+                @Query("first") Integer first,
+                @Query("max") Integer max,
+                @Query("project") String projectId);
 
         @GET("query.json" +
                 "?e=ts$Task" +

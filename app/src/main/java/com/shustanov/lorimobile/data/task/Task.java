@@ -1,15 +1,15 @@
 package com.shustanov.lorimobile.data.task;
 
 import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.Unique;
-import org.greenrobot.greendao.annotation.Generated;
 
 @Entity
 public class Task {
     @Unique
-    private String id ;
+    private String id;
     @Property
     private String name;
     @Property
@@ -80,5 +80,10 @@ public class Task {
 
     public void setProject(String project) {
         this.project = project;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

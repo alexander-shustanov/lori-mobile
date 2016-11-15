@@ -27,10 +27,10 @@ class WeekItemsDiffCallback extends DiffUtil.Callback {
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
         WeekAdapter.WeekItem oldItem = oldItems.get(oldItemPosition);
         WeekAdapter.WeekItem newItem = newItems.get(newItemPosition);
-        if(oldItem.type != newItem.type) {
+        if (oldItem.type != newItem.type) {
             return false;
         }
-        if(oldItem.type == WeekAdapter.WeekItem.DAY) {
+        if (oldItem.type == WeekAdapter.WeekItem.DAY) {
             return ((WeekAdapter.Day) oldItem).day == ((WeekAdapter.Day) newItem).day;
         }
         return ((WeekAdapter.Entry) oldItem).timeEntry.getId().equals(((WeekAdapter.Entry) newItem).timeEntry.getId());
@@ -38,6 +38,8 @@ class WeekItemsDiffCallback extends DiffUtil.Callback {
 
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-        return true;
+        WeekAdapter.WeekItem oldItem = oldItems.get(oldItemPosition);
+        WeekAdapter.WeekItem newItem = newItems.get(newItemPosition);
+        return oldItem.type == WeekAdapter.WeekItem.DAY;
     }
 }

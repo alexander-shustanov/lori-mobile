@@ -62,7 +62,7 @@ public class ProjectListFragment extends BaseFragment implements ProjectListView
     }
 
     @Override
-    public void openAddTimeEntryActivity(String taskId) {
-        NewTimeEntryActivity_.intent(this).taskId(taskId).startForResult(ADD_TIME_ENTRY_REQUEST_CODE);
+    public void openAddTimeEntryActivity(String projectId) {
+        NewTimeEntryActivity_.intent(this).projectId(projectId).startForResult(ADD_TIME_ENTRY_REQUEST_CODE);
     }
 }

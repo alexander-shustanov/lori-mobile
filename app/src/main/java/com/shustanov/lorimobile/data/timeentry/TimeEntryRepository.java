@@ -9,6 +9,7 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 import org.joda.time.LocalDate;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -38,7 +39,6 @@ public class TimeEntryRepository extends Repository<TimeEntry> {
         if (isDirty()) {
             return api
                     .getForWeek(from, to)
-                    .doOnNext(entries -> System.out.println(entries.size()))
                     .onErrorResumeNext(throwable ->
                             timeEntryDataSource
                                     .getForWeek(from, to)

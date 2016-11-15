@@ -9,5 +9,5 @@ import com.shustanov.lorimobile.ui.list.ListView;
  * alexander.shustanov on 10.11.16
  */
 public interface ProjectListView extends ListView<Project> {
-    void openAddTimeEntryActivity(String taskId);
+    void openAddTimeEntryActivity(String projectId);
 }
