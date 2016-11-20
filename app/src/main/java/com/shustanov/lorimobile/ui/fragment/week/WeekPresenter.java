@@ -36,39 +36,25 @@ class WeekPresenter extends Presenter<WeekView> implements SwipeRefreshLayout.On
     private LocalDate monday;
 
     private List<TimeEntry> entries = new ArrayList<>();
-    private boolean refreshing = false;
     private boolean pendingClear = false;
 
-    @Override
-    protected void onViewAttached() {
-        super.onViewAttached();
-
-        if (monday == null) {
-            monday = LocalDate.fromDateFields(new Date(getView().getTime()));
+    public void setup(Date monday) {
+        if (this.monday == null) {
+            this.monday = LocalDate.fromDateFields(monday);
             Subscription subscription = buildEntriesObservable()
                     .subscribe(this::entriesReceived, this::refreshFailed);
-          this.subscription.add(subscription);
-        }
-
-        getView().setWeek(monday);
-        updateView();
-    }
-
-    private void updateView() {
-        WeekView view = getView();
-        if (view != null) {
-            view.update(this.entries);
-            view.setRefreshing(refreshing);
+            this.subscription.add(subscription);
+            getView().setWeek(this.monday);
         }
     }
 
-    private void entriesReceived(List<TimeEntry> entries) {
+    private void entriesReceived(List<TimeEntry> newEntries) {
         if (pendingClear) {
             this.entries.clear();
             pendingClear = false;
         }
-        this.entries.addAll(entries);
-        updateView();
+        this.entries.addAll(newEntries);
+        getView().update(this.entries);
     }
 
     @Override
@@ -81,17 +67,12 @@ class WeekPresenter extends Presenter<WeekView> implements SwipeRefreshLayout.On
     }
 
     private void refreshFailed(Throwable throwable) {
-        refreshing = false;
-        WeekView view = getView();
-        if (view != null) {
-            view.refreshFailed(throwable);
-            view.setRefreshing(refreshing);
-        }
+        getView().setRefreshing(false);
+        getView().refreshFailed(throwable);
     }
 
     private void refreshCompleted() {
-        refreshing = false;
-        updateView();
+        getView().setRefreshing(false);
     }
 
 

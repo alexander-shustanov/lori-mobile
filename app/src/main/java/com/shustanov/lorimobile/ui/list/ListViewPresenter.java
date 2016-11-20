@@ -5,6 +5,7 @@ import com.depthguru.mvp.api.Presenter;
 import com.shustanov.lorimobile.data.EntityApi;
 import com.shustanov.lorimobile.data.Repository;
 
+import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.EBean;
 
 import java.util.ArrayList;
@@ -17,22 +18,24 @@ import rx.subscriptions.CompositeSubscription;
  * </p>
  * alexander.shustanov on 10.11.16
  */
+@EBean
 public abstract class ListViewPresenter<T, V extends ListView<T>> extends Presenter<V> {
     private CompositeSubscription compositeSubscription;
 
     private boolean clearPending;
     private List<T> items = new ArrayList<>();
+    private V view;
 
-    @Override
-    protected void onViewAttached() {
-        super.onViewAttached();
+    @AfterInject
+    protected void init() {
         compositeSubscription = new CompositeSubscription();
         compositeSubscription.add(repository().getAll().subscribe(this::onItemsReceived, this::onItemsGetError));
+        view = getView();
     }
 
     private void onItemsGetError(Throwable throwable) {
-        getView().refreshFailed(throwable);
-        getView().stopRefresh();
+        view.refreshFailed(throwable);
+        view.stopRefresh();
     }
 
     public void refresh() {
@@ -41,14 +44,8 @@ public abstract class ListViewPresenter<T, V extends ListView<T>> extends Presen
         compositeSubscription.add(
                 repository()
                         .getAll()
-                        .subscribe(this::onItemsReceived, this::onItemsGetError, getView()::stopRefresh)
+                        .subscribe(this::onItemsReceived, this::onItemsGetError, view::stopRefresh)
         );
-    }
-
-    @Override
-    protected void onViewDetached() {
-        super.onViewDetached();
-        compositeSubscription.unsubscribe();
     }
 
     private void onItemsReceived(List<T> items) {
@@ -56,7 +53,14 @@ public abstract class ListViewPresenter<T, V extends ListView<T>> extends Presen
             this.items.clear();
             clearPending = false;
         }
-        getView().setItems(items);
+        this.items.addAll(items);
+        view.setItems(this.items);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        compositeSubscription.unsubscribe();
     }
 
     protected abstract EntityApi<T, ?> api();

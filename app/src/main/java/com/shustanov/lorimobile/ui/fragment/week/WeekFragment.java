@@ -20,6 +20,7 @@ import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.ViewById;
 import org.joda.time.LocalDate;
 
+import java.util.Date;
 import java.util.List;
 
 @EMvpFragment
@@ -43,6 +44,8 @@ public class WeekFragment extends BaseFragment implements WeekView {
 
     @AfterViews
     void init() {
+        presenter.setup(new Date(time));
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         daysList.setLayoutManager(layoutManager);
         Drawable divider = getContext().getResources().getDrawable(R.drawable.day_divider, getContext().getTheme());
@@ -56,11 +59,6 @@ public class WeekFragment extends BaseFragment implements WeekView {
     public void onStop() {
         refreshLayout.setRefreshing(false);
         super.onStop();
-    }
-
-    @Override
-    public long getTime() {
-        return time;
     }
 
     @Override

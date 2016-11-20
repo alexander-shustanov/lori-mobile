@@ -21,14 +21,22 @@ import org.androidannotations.annotations.EBean;
 @EBean
 @EPresenter
 public class ProjectListPresenter extends ListViewPresenter<Project, ProjectListView> implements ProjectListAdapter.Listener {
+    private ProjectListView view;
+
     @Bean
     protected ProjectApi projectApi;
     @Bean
     protected ProjectRepository projectRepository;
 
     @Override
+    protected void init() {
+        super.init();
+        view = getView();
+    }
+
+    @Override
     public void addTimeEntry(Project project) {
-        getView().openAddTimeEntryActivity(project.getId());
+        view.openAddTimeEntryActivity(project.getId());
     }
 
     @Override
