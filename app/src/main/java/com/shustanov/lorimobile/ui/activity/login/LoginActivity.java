@@ -8,13 +8,12 @@ import android.widget.ProgressBar;
 
 import com.shustanov.lorimobile.R;
 import com.shustanov.lorimobile.Utilities;
-import com.shustanov.lorimobile.ui.activity.BaseActivity;
-import com.shustanov.lorimobile.ui.activity.main.MainActivity_;
 import com.shustanov.lorimobile.api.LoginApi;
 import com.shustanov.lorimobile.data.DbHelper;
 import com.shustanov.lorimobile.data.user.User;
 import com.shustanov.lorimobile.data.user.UserPrefsFacade;
-import com.shustanov.lorimobile.ui.fragment.settings.SettingsFragmentDialog_;
+import com.shustanov.lorimobile.ui.activity.BaseActivity;
+import com.shustanov.lorimobile.ui.activity.main.MainActivity_;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -26,10 +25,12 @@ import retrofit2.adapter.rxjava.HttpException;
 
 @EActivity(R.layout.a_login)
 public class LoginActivity extends BaseActivity {
-
+    @Bean
+    LoginApi loginApi;
+    @Bean
+    DbHelper dbHelper;
     @Bean
     UserPrefsFacade userPrefs;
-
     @ViewById(R.id.login_text)
     EditText login;
     @ViewById(R.id.login_password)
@@ -39,17 +40,12 @@ public class LoginActivity extends BaseActivity {
     @ViewById(R.id.sign_in)
     Button signInButton;
 
-    @Bean
-    protected LoginApi loginApi;
-    @Bean
-    protected DbHelper dbHelper;
-
     @AfterViews
     void init() {
         login.setText(userPrefs.getUserName());
         password.setText(userPrefs.getPass());
 
-        if(userPrefs.isAuthorised()) {
+        if (userPrefs.isAuthorised()) {
             startApp();
         }
     }
@@ -65,11 +61,6 @@ public class LoginActivity extends BaseActivity {
                                 this::successLogin,
                                 this::unsuccessLogin)
         );
-    }
-
-    @Click(R.id.settings)
-    void openSettings() {
-        SettingsFragmentDialog_.builder().build().show(getSupportFragmentManager(), "");
     }
 
     private void successLogin(User user) {
